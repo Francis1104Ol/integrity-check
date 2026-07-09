@@ -1,21 +1,78 @@
-User
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
+import ROLES from "../constants/roles.js";
+const userSchema = new mongoose.Schema(
+  {
+    firstName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
 
-id
+    lastName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
 
-firstName
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
 
-lastName
+    password: {
+      type: String,
+      required: true,
+      minlength: 8,
+      select: false,
+    },
 
-email
+    role: {
+      type: String,
+      enum: Object.values(ROLES),
+      default: ROLES.VALIDATION_OFFICER,
+    },
 
-password
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
 
-role
+    lastLogin: {
+      type: Date,
+      default: null,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-isActive
 
-lastLogin
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
+    return next();
+  }
 
-createdAt
+  const salt = await bcrypt.genSalt(12);
+  this.password = await bcrypt.hash(this.password, salt);
 
-updatedAt
+  next();
+});
+userSchema.methods.comparePassword = async function (candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password);
+};
+userSchema.methods.toJSON = function () {
+  const user = this.toObject();
+
+  delete user.password;
+  delete user.__v;
+
+  return user;
+};
+const User = mongoose.model("User", userSchema);
+
+export default User;
