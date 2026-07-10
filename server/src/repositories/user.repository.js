@@ -30,7 +30,7 @@ class UserRepository {
   }
 
   async existsByEmail(email) {
-    return await User.exists({ email });
+    return !!(await User.exists({ email }));
   }
 }
 
