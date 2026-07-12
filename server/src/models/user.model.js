@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema(
     },
 
     email: {
+      type: String,
       match: [/^\S+@\S+\.\S+$/, "Invalid email address"],
       required: true,
       unique: true,
@@ -60,7 +61,6 @@ userSchema.pre("save", async function (next) {
   const salt = await bcrypt.genSalt(12);
   this.password = await bcrypt.hash(this.password, salt);
 
-  next();
 });
 userSchema.methods.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);

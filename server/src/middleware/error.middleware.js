@@ -1,5 +1,8 @@
 const errorMiddleware = (err, req, res, next) => {
+  console.error("===== ERROR =====");
   console.error(err);
+  console.error(err.stack);
+ 
 
   const statusCode = err.statusCode || 500;
 

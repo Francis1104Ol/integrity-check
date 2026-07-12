@@ -65,13 +65,15 @@ class AuthService {
         id: user._id,
         role: user.role,
     });
-
+    // Returning Plain data
     return{
         user,
         token,
     };
   }
 
+
 }
+
 
 export default new AuthService();
