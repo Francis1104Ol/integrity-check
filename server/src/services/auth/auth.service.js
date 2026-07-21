@@ -2,7 +2,6 @@ import UserRepository from "../../repositories/user.repository.js";
 import { generateToken } from "../../utils/jwt.js";
 import ApiError from "../../utils/ApiError.js";
 import ROLES from "../../constants/roles.js";
-import userRepository from "../../repositories/user.repository.js";
 
 class AuthService {
   async register(credentials) {
