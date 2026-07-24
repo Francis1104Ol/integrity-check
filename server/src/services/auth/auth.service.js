@@ -36,7 +36,7 @@ class AuthService {
   }
   /** Login an existing user */
   async login({ email, password}){
-    const user = await userRepository.findByEmail(email);
+    const user = await UserRepository.findByEmail(email);
         // check if user exists
     if (!user){
         throw new ApiError(401, "Invalid email or password.");

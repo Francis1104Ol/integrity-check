@@ -13,9 +13,9 @@ const authMiddleware = async (req, res, next) => {
     }
 
     const token = authHeader.split(" ")[1];
-
+    console.log("TOKEN:", token);
     const decoded = verifyToken(token);
-
+    console.log("DECODED:", decoded);
     const user = await UserRepository.findById(decoded.id);
 
     if (!user || !user.isActive) {
@@ -31,6 +31,7 @@ const authMiddleware = async (req, res, next) => {
 
     next();
   } catch (error) {
+      console.error("JWT ERROR:", error);
     next(
       new ApiError(
         401,

@@ -6,8 +6,14 @@ class ExcelService {
     try {
       const workbook = xlsx.readFile(filePath);
 
-      const sheetName = workbook.SheetNames[0];
+      if (!workbook.SheetNames.length) {
+        throw new ApiError(
+          400,
+          "The uploaded Excel file contains no worksheets."
+        );
+      }
 
+      const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
 
       return xlsx.utils.sheet_to_json(worksheet, {
@@ -16,7 +22,14 @@ class ExcelService {
         trim: true,
       });
     } catch (error) {
-      throw new ApiError(500, "Failed to read Excel file.");
+      if (error instanceof ApiError) {
+        throw error;
+      }
+
+      throw new ApiError(
+        500,
+        "Failed to read Excel file."
+      );
     }
   }
 }
