@@ -16,29 +16,30 @@ const datasetSchema = new mongoose.Schema(
     },
 
     originalFileName: {
-  type: String,
-  required: true,
-},
+      type: String,
+      required: true,
+    },
 
-storedFileName: {
-  type: String,
-  required: true,
-},
+    storedFileName: {
+      type: String,
+      required: true,
+    },
 
-filePath: {
-  type: String,
-  required: true,
-},
+    filePath: {
+      type: String,
+      required: true,
+    },
 
-mimeType: {
-  type: String,
-  required: true,
-},
+    mimeType: {
+      type: String,
+      required: true,
+    },
 
-fileSize: {
-  type: Number,
-  required: true,
-},
+    fileSize: {
+      type: Number,
+      required: true,
+    },
+
     uploadedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -65,12 +66,93 @@ fileSize: {
       type: Number,
       default: 0,
     },
+
+    report: {
+      summary: {
+        status: {
+          type: String,
+          default: "PENDING",
+        },
+        message: {
+          type: String,
+          default: "",
+        },
+      },
+
+      statistics: {
+        totalRecords: {
+          type: Number,
+          default: 0,
+        },
+        validRecords: {
+          type: Number,
+          default: 0,
+        },
+        invalidRecords: {
+          type: Number,
+          default: 0,
+        },
+        duplicateRecords: {
+          type: Number,
+          default: 0,
+        },
+        warningCount: {
+          type: Number,
+          default: 0,
+        },
+      },
+
+      errors: {
+  type: [
+    {
+      _id: false,
+      row: {
+        type: Number,
+      },
+      field: {
+        type: String,
+      },
+      type: {
+        type: String,
+      },
+      message: {
+        type: String,
+      },
+    },
+  ],
+  default: [],
+},
+
+      warnings: {
+  type: [
+    {
+      _id: false,
+      row: {
+        type: Number,
+      },
+      field: {
+        type: String,
+      },
+      type: {
+        type: String,
+      },
+      message: {
+        type: String,
+      },
+    },
+  ],
+  default: [],
+},
+
+    validatedAt: {
+      type: Date,
+    },
   },
+},
   {
     timestamps: true,
   }
 );
-
 const Dataset = mongoose.model("Dataset", datasetSchema);
 
 export default Dataset;

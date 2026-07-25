@@ -86,6 +86,34 @@ class DatasetController {
       next(error);
     }
   }
+  async getReport(req, res, next) {
+  try {
+    const report = await DatasetService.getReport(req.params.id);
+
+    res.status(200).json({
+      success: true,
+      message: "Validation report retrieved successfully.",
+      data: report,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+async getReport(req, res, next) {
+  try {
+    const report = await DatasetService.getReport(
+      req.params.id
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Validation report retrieved successfully.",
+      data: report,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
 }
 
 export default new DatasetController();

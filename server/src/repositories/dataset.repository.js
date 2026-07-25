@@ -27,6 +27,15 @@ class DatasetRepository {
   async delete(id) {
     return await Dataset.findByIdAndDelete(id);
   }
+  async findReportById(id) {
+  return await Dataset.findById(id).select("name report validatedAt status");
+};
+async findReportById(id) {
+  return await Dataset.findById(id).select(
+    "name status validatedAt report"
+  );
 }
+}
+
 
 export default new DatasetRepository();
