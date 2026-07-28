@@ -2,40 +2,83 @@ import Dataset from "../models/dataset.model.js";
 
 class DatasetRepository {
   async create(datasetData) {
-    return await Dataset.create(datasetData);
+    return Dataset.create(datasetData);
   }
 
-  async findAll() {
-    return await Dataset.find()
-      .populate("uploadedBy", "firstName lastName email")
-      .sort({ createdAt: -1 });
+  async findAll({
+    page = 1,
+    limit = 10,
+    search = "",
+    status,
+    sort = "createdAt",
+  }) {
+    const filter = {};
+
+    if (search) {
+      filter.name = {
+        $regex: search,
+        $options: "i",
+      };
+    }
+
+    if (status) {
+      filter.status = status;
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [datasets, total] = await Promise.all([
+      Dataset.find(filter)
+        .populate(
+          "uploadedBy",
+          "firstName lastName email"
+        )
+        .sort({ [sort]: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+
+      Dataset.countDocuments(filter),
+    ]);
+
+    return {
+      datasets,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async findById(id) {
-    return await Dataset.findById(id)
-      .populate("uploadedBy", "firstName lastName email");
+    return Dataset.findById(id)
+      .populate(
+        "uploadedBy",
+        "firstName lastName email"
+      );
+  }
+
+  async findReportById(id) {
+    return Dataset.findById(id).select(
+      "name status validatedAt report"
+    );
   }
 
   async update(id, updateData) {
-    return await Dataset.findByIdAndUpdate(
+    return Dataset.findByIdAndUpdate(
       id,
       updateData,
-      { new: true }
+      {
+        returnDocument: "after",
+      }
     );
   }
 
   async delete(id) {
-    return await Dataset.findByIdAndDelete(id);
+    return Dataset.findByIdAndDelete(id);
   }
-  async findReportById(id) {
-  return await Dataset.findById(id).select("name report validatedAt status");
-};
-async findReportById(id) {
-  return await Dataset.findById(id).select(
-    "name status validatedAt report"
-  );
 }
-}
-
 
 export default new DatasetRepository();

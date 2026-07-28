@@ -13,9 +13,9 @@ const authMiddleware = async (req, res, next) => {
     }
 
     const token = authHeader.split(" ")[1];
-    console.log("TOKEN:", token);
+
     const decoded = verifyToken(token);
-    console.log("DECODED:", decoded);
+
     const user = await UserRepository.findById(decoded.id);
 
     if (!user || !user.isActive) {
@@ -29,10 +29,9 @@ const authMiddleware = async (req, res, next) => {
 
     req.user = user;
 
-    next();
+    return next();
   } catch (error) {
-      console.error("JWT ERROR:", error);
-    next(
+    return next(
       new ApiError(
         401,
         "Invalid or expired token."

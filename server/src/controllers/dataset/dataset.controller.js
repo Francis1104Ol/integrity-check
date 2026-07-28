@@ -2,6 +2,9 @@ import DatasetService from "../../services/dataset/dataset.service.js";
 import ApiResponse from "../../utils/ApiResponse.js";
 
 class DatasetController {
+  /**
+   * Create a dataset
+   */
   async create(req, res, next) {
     try {
       const datasetData = {
@@ -18,10 +21,13 @@ class DatasetController {
         )
       );
     } catch (error) {
-      next(error);
+      return next(error);
     }
   }
 
+  /**
+   * Upload and validate a dataset
+   */
   async upload(req, res, next) {
     try {
       const uploadData = {
@@ -39,13 +45,16 @@ class DatasetController {
         )
       );
     } catch (error) {
-      next(error);
+      return next(error);
     }
   }
 
+  /**
+   * Get all datasets
+   */
   async getAll(req, res, next) {
     try {
-      const datasets = await DatasetService.getAll();
+      const datasets = await DatasetService.getAll(req.query);
 
       return res.status(200).json(
         ApiResponse.success(
@@ -54,10 +63,13 @@ class DatasetController {
         )
       );
     } catch (error) {
-      next(error);
+      return next(error);
     }
   }
 
+  /**
+   * Get dataset by ID
+   */
   async getById(req, res, next) {
     try {
       const dataset = await DatasetService.getById(req.params.id);
@@ -69,51 +81,62 @@ class DatasetController {
         )
       );
     } catch (error) {
-      next(error);
+      return next(error);
     }
   }
 
+  /**
+   * Delete dataset
+   */
   async delete(req, res, next) {
     try {
       const response = await DatasetService.delete(req.params.id);
 
       return res.status(200).json(
+        ApiResponse.success(response.message)
+      );
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  /**
+   * Get validation report
+   */
+  async getReport(req, res, next) {
+    try {
+      const report = await DatasetService.getReport(req.params.id);
+
+      return res.status(200).json(
         ApiResponse.success(
-          response.message
+          "Validation report retrieved successfully.",
+          report
         )
       );
     } catch (error) {
-      next(error);
+      return next(error);
     }
   }
-  async getReport(req, res, next) {
-  try {
-    const report = await DatasetService.getReport(req.params.id);
 
-    res.status(200).json({
-      success: true,
-      message: "Validation report retrieved successfully.",
-      data: report,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-async getReport(req, res, next) {
-  try {
-    const report = await DatasetService.getReport(
-      req.params.id
-    );
+  /**
+   * Export validation report as PDF
+   */
+  async exportPdf(req, res, next) {
+    try {
+      const pdfBuffer = await DatasetService.exportPdf(req.params.id);
 
-    res.status(200).json({
-      success: true,
-      message: "Validation report retrieved successfully.",
-      data: report,
-    });
-  } catch (error) {
-    next(error);
+      res.setHeader("Content-Type", "application/pdf");
+
+      res.setHeader(
+        "Content-Disposition",
+        'attachment; filename="validation-report.pdf"'
+      );
+
+      return res.send(pdfBuffer);
+    } catch (error) {
+      return next(error);
+    }
   }
-}
 }
 
 export default new DatasetController();

@@ -8,7 +8,9 @@ import env from "../config/env.js";
  */
 export const generateToken = (payload) => {
   return jwt.sign(payload, env.jwtSecret, {
+    algorithm: "HS256",
     expiresIn: env.jwtExpiresIn,
+    issuer: "IntegrityCheck",
   });
 };
 

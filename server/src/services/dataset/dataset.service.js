@@ -4,6 +4,7 @@ import ApiError from "../../utils/ApiError.js";
 import ValidationService from "../validation/validation.service.js";
 import HeaderMappingService from "../mapping/header-mapping.service.js";
 import DATASET_STATUS from "../../constants/datasetStatus.js";
+import ExportService from "../export/export.service.js";
 class DatasetService {
   async upload(uploadData) {
   const { name, description, uploadedBy, file } = uploadData;
@@ -63,7 +64,7 @@ class DatasetService {
 
   // Save updates
   await dataset.save();
-
+dataset.validatedAt = new Date();
   return {
     dataset,
     report,
@@ -74,9 +75,22 @@ class DatasetService {
     return await DatasetRepository.create(datasetData);
   }
 
-  async getAll() {
-    return await DatasetRepository.findAll();
-  }
+async getAll(query) {
+  const page = Math.max(Number(query.page) || 1, 1);
+
+  const limit = Math.min(
+    Math.max(Number(query.limit) || 10, 1),
+    100
+  );
+
+  return await DatasetRepository.findAll({
+    page,
+    limit,
+    search: query.search || "",
+    status: query.status,
+    sort: query.sort || "createdAt",
+  });
+}
 
   async getById(id) {
     const dataset = await DatasetRepository.findById(id);
@@ -121,7 +135,18 @@ async getReport(id) {
 
   return dataset;
 }
+async exportPdf(id) {
+  const dataset = await DatasetRepository.findById(id);
 
+  if (!dataset) {
+    throw new ApiError(
+      404,
+      "Dataset not found."
+    );
+  }
+
+  return await ExportService.generatePdf(dataset);
+}
 }
 
 export default new DatasetService();

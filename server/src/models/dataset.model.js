@@ -1,6 +1,18 @@
 import mongoose from "mongoose";
 import DATASET_STATUS from "../constants/datasetStatus.js";
 
+const validationIssueSchema = new mongoose.Schema(
+  {
+    row: Number,
+    field: String,
+    type: String,
+    message: String,
+  },
+  {
+    _id: false,
+  }
+);
+
 const datasetSchema = new mongoose.Schema(
   {
     name: {
@@ -38,6 +50,7 @@ const datasetSchema = new mongoose.Schema(
     fileSize: {
       type: Number,
       required: true,
+      min: 0,
     },
 
     uploadedBy: {
@@ -55,16 +68,19 @@ const datasetSchema = new mongoose.Schema(
     totalRecords: {
       type: Number,
       default: 0,
+      min: 0,
     },
 
     duplicateRecords: {
       type: Number,
       default: 0,
+      min: 0,
     },
 
     processingTime: {
       type: Number,
       default: 0,
+      min: 0,
     },
 
     report: {
@@ -73,6 +89,7 @@ const datasetSchema = new mongoose.Schema(
           type: String,
           default: "PENDING",
         },
+
         message: {
           type: String,
           default: "",
@@ -84,18 +101,22 @@ const datasetSchema = new mongoose.Schema(
           type: Number,
           default: 0,
         },
+
         validRecords: {
           type: Number,
           default: 0,
         },
+
         invalidRecords: {
           type: Number,
           default: 0,
         },
+
         duplicateRecords: {
           type: Number,
           default: 0,
         },
+
         warningCount: {
           type: Number,
           default: 0,
@@ -103,56 +124,26 @@ const datasetSchema = new mongoose.Schema(
       },
 
       errors: {
-  type: [
-    {
-      _id: false,
-      row: {
-        type: Number,
+        type: [validationIssueSchema],
+        default: [],
       },
-      field: {
-        type: String,
-      },
-      type: {
-        type: String,
-      },
-      message: {
-        type: String,
-      },
-    },
-  ],
-  default: [],
-},
 
       warnings: {
-  type: [
-    {
-      _id: false,
-      row: {
-        type: Number,
-      },
-      field: {
-        type: String,
-      },
-      type: {
-        type: String,
-      },
-      message: {
-        type: String,
+        type: [validationIssueSchema],
+        default: [],
       },
     },
-  ],
-  default: [],
-},
 
     validatedAt: {
       type: Date,
+      default: null,
     },
   },
-},
   {
     timestamps: true,
   }
 );
+
 const Dataset = mongoose.model("Dataset", datasetSchema);
 
 export default Dataset;

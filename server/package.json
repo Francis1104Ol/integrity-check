@@ -4,10 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
-  },
+  "test": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --runInBand",
+  "test:watch": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --watch",
+  "test:coverage": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+  "start": "node src/server.js",
+  "dev": "nodemon src/server.js"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -25,11 +27,19 @@
     "mongoose": "^9.7.4",
     "morgan": "^1.11.0",
     "multer": "^2.2.0",
+    "pdfkit": "^0.19.1",
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-express": "^5.0.1",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "eslint": "^10.6.0",
-    "nodemon": "^3.1.14",
-    "prettier": "^3.9.4"
+    "@jest/globals": "^30.4.1",
+    "cross-env": "^10.1.0",
+    "eslint": "^10.x",
+    "jest": "^30.4.2",
+    "mongodb-memory-server": "^10.4.3",
+    "nodemon": "^3.x",
+    "prettier": "^3.x",
+    "supertest": "^7.2.2"
   }
 }

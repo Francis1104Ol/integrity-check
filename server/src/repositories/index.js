@@ -1,5 +1,9 @@
-import userRepository from "./user.repository.js";
+import UserRepository from "./user.repository.js";
+import DatasetRepository from "./dataset.repository.js";
+import DashboardRepository from "./dashboard.repository.js";
 
 export {
-  userRepository,
+  UserRepository,
+  DatasetRepository,
+  DashboardRepository,
 };

@@ -1,3 +1,5 @@
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./config/swagger.js";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -11,7 +13,11 @@ import notFoundMiddleware from "./middleware/notFound.middleware.js";
 import errorMiddleware from "./middleware/error.middleware.js";
 
 const app = express();
-
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec)
+);
 app.use(
   cors({
     origin: env.clientUrl,
@@ -42,5 +48,4 @@ app.use("/api/v1", routes);
 app.use(notFoundMiddleware);
 
 app.use(errorMiddleware);
-
 export default app;

@@ -10,7 +10,8 @@
 *.userosscache
 *.sln.docstates
 *.env
-
+uploads/*
+!uploads/.gitkeep
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 

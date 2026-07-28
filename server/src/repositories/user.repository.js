@@ -2,35 +2,43 @@ import User from "../models/user.model.js";
 
 class UserRepository {
   async create(userData) {
-    return await User.create(userData);
+    return User.create(userData);
   }
 
   async findByEmail(email) {
-    return await User.findOne({ email }).select("+password");
+    return User.findOne({ email }).select("+password");
   }
 
   async findById(id) {
-    return await User.findById(id);
+    return User.findById(id);
   }
 
   async updateLastLogin(id) {
-    return await User.findByIdAndUpdate(
+    return User.findByIdAndUpdate(
       id,
-      { lastLogin: new Date() },
-      { new: true }
+      {
+        lastLogin: new Date(),
+      },
+      {
+        returnDocument: "after",
+      }
     );
   }
 
   async deactivate(id) {
-    return await User.findByIdAndUpdate(
+    return User.findByIdAndUpdate(
       id,
-      { isActive: false },
-      { new: true }
+      {
+        isActive: false,
+      },
+      {
+        returnDocument: "after",
+      }
     );
   }
 
   async existsByEmail(email) {
-    return !!(await User.exists({ email }));
+    return Boolean(await User.exists({ email }));
   }
 }
 
