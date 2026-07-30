@@ -1,0 +1,6 @@
+const VALIDATION_STATUS = {
+  PASSED: "PASSED",
+  FAILED: "FAILED",
+};
+
+export default VALIDATION_STATUS;

@@ -7,12 +7,13 @@ class DashboardController {
    */
   async getStats(req, res, next) {
     try {
-      const stats = await DashboardService.getStats();
+      const dashboard =
+        await DashboardService.getStats();
 
       return res.status(200).json(
         ApiResponse.success(
           "Dashboard statistics retrieved successfully.",
-          stats
+          dashboard
         )
       );
     } catch (error) {

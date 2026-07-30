@@ -8,8 +8,8 @@ router.use(authMiddleware);
 /**
  * @swagger
  * tags:
- *   name: Dashboard
- *   description: Dashboard analytics
+ *  name: Dashboard
+ *  description: Dashboard analytics
  */
 
 /**
@@ -25,6 +25,8 @@ router.use(authMiddleware);
  *         description: Dashboard statistics retrieved successfully
  *       401:
  *         description: Unauthorized
+ *       500:
+ *         description: Internal server error
  */
 router.get("/stats", DashboardController.getStats);
 

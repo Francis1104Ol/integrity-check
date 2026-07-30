@@ -1,3 +1,7 @@
+import VALIDATION_FIELDS from "../../constants/validationFields.js";
+import VALIDATION_TYPES from "../../constants/validationTypes.js";
+import VALIDATION_SEVERITY from "../../constants/validationSeverity.js";
+
 class DuplicateService {
   detect(records) {
     const errors = [];
@@ -8,53 +12,57 @@ class DuplicateService {
     const seenCoordinates = new Map();
 
     records.forEach((record, index) => {
-      const row = index + 2; // Excel row number
+      const row = index + 2;
 
-      // ------------------------
+      const nin = String(record.nin ?? "").trim();
+      const phone = String(record.phone ?? "").trim();
+      const coordinate = String(record.farmCoordinate ?? "").trim();
+
       // Duplicate NIN
-      // ------------------------
-      if (record.nin) {
-        if (seenNins.has(record.nin)) {
+      if (nin) {
+        if (seenNins.has(nin)) {
           errors.push({
             row,
-            field: "nin",
-            type: "DUPLICATE",
-            message: `Duplicate NIN. First found in row ${seenNins.get(record.nin)}.`,
+            field: VALIDATION_FIELDS.NIN,
+            value: nin,
+            type: VALIDATION_TYPES.DUPLICATE,
+            severity: VALIDATION_SEVERITY.ERROR,
+            message: `Duplicate NIN. First found in row ${seenNins.get(nin)}.`,
           });
         } else {
-          seenNins.set(record.nin, row);
+          seenNins.set(nin, row);
         }
       }
 
-      // ------------------------
       // Duplicate Phone
-      // ------------------------
-      if (record.phone) {
-        if (seenPhones.has(record.phone)) {
+      if (phone) {
+        if (seenPhones.has(phone)) {
           errors.push({
             row,
-            field: "phone",
-            type: "DUPLICATE",
-            message: `Duplicate phone number. First found in row ${seenPhones.get(record.phone)}.`,
+            field: VALIDATION_FIELDS.PHONE,
+            value: phone,
+            type: VALIDATION_TYPES.DUPLICATE,
+            severity: VALIDATION_SEVERITY.ERROR,
+            message: `Duplicate phone number. First found in row ${seenPhones.get(phone)}.`,
           });
         } else {
-          seenPhones.set(record.phone, row);
+          seenPhones.set(phone, row);
         }
       }
 
-      // ------------------------
-      // Duplicate Farm Coordinate
-      // ------------------------
-      if (record.farmCoordinate) {
-        if (seenCoordinates.has(record.farmCoordinate)) {
+      // Duplicate Coordinates
+      if (coordinate) {
+        if (seenCoordinates.has(coordinate)) {
           warnings.push({
             row,
-            field: "farmCoordinate",
-            type: "DUPLICATE",
-            message: `Duplicate farm coordinate. First found in row ${seenCoordinates.get(record.farmCoordinate)}.`,
+            field: VALIDATION_FIELDS.FARM_COORDINATE,
+            value: coordinate,
+            type: VALIDATION_TYPES.DUPLICATE,
+            severity: VALIDATION_SEVERITY.WARNING,
+            message: `Duplicate farm coordinate. First found in row ${seenCoordinates.get(coordinate)}.`,
           });
         } else {
-          seenCoordinates.set(record.farmCoordinate, row);
+          seenCoordinates.set(coordinate, row);
         }
       }
     });

@@ -40,6 +40,13 @@ class UserRepository {
   async existsByEmail(email) {
     return Boolean(await User.exists({ email }));
   }
+  async findAll() {
+  return User.find()
+    .select("-password")
+    .sort({
+      createdAt: -1,
+    });
+}
 }
 
 export default new UserRepository();

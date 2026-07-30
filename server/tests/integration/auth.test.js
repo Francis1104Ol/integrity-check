@@ -1,16 +1,24 @@
-import { describe, it, expect } from "@jest/globals";
+import { describe, it, expect, beforeEach } from "@jest/globals";
 import request from "supertest";
 
 import app from "../../src/app.js";
 import User from "../../src/models/user.model.js";
 
 describe("Authentication API", () => {
-  const userData = {
-    firstName: "John",
-    lastName: "Doe",
-    email: "john@example.com",
-    password: "Password123",
-  };
+  let userData;
+
+  beforeEach(async () => {
+    // Clean users before every test
+    await User.deleteMany({});
+
+    // Fresh user for every test
+    userData = {
+      firstName: "John",
+      lastName: "Doe",
+      email: "john@example.com",
+      password: "Password123",
+    };
+  });
 
   describe("POST /api/v1/auth/register", () => {
     it("should register a new user", async () => {
@@ -32,8 +40,6 @@ describe("Authentication API", () => {
       }).select("+password");
 
       expect(user).not.toBeNull();
-
-      // Password should be hashed
       expect(user.password).not.toBe(userData.password);
     });
 
@@ -70,11 +76,8 @@ describe("Authentication API", () => {
         });
 
       expect(response.status).toBe(200);
-
       expect(response.body.success).toBe(true);
-
       expect(response.body.data).toHaveProperty("token");
-
       expect(response.body.data.user.email).toBe(
         userData.email
       );
@@ -89,9 +92,7 @@ describe("Authentication API", () => {
         });
 
       expect(response.status).toBe(401);
-
       expect(response.body.success).toBe(false);
-
       expect(response.body.message).toBe(
         "Invalid email or password."
       );
@@ -106,9 +107,7 @@ describe("Authentication API", () => {
         });
 
       expect(response.status).toBe(401);
-
       expect(response.body.success).toBe(false);
-
       expect(response.body.message).toBe(
         "Invalid email or password."
       );
@@ -119,9 +118,18 @@ describe("Authentication API", () => {
     let token;
 
     beforeEach(async () => {
-      const response = await request(app)
+      await request(app)
         .post("/api/v1/auth/register")
         .send(userData);
+
+      const response = await request(app)
+        .post("/api/v1/auth/login")
+        .send({
+          email: userData.email,
+          password: userData.password,
+        });
+
+      expect(response.status).toBe(200);
 
       token = response.body.data.token;
     });
@@ -132,9 +140,7 @@ describe("Authentication API", () => {
         .set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toBe(200);
-
       expect(response.body.success).toBe(true);
-
       expect(response.body.data.email).toBe(
         userData.email
       );
@@ -145,9 +151,7 @@ describe("Authentication API", () => {
         .get("/api/v1/auth/profile");
 
       expect(response.status).toBe(401);
-
       expect(response.body.success).toBe(false);
-
       expect(response.body.message).toBe(
         "Authentication required."
       );
@@ -158,9 +162,18 @@ describe("Authentication API", () => {
     let token;
 
     beforeEach(async () => {
-      const response = await request(app)
+      await request(app)
         .post("/api/v1/auth/register")
         .send(userData);
+
+      const response = await request(app)
+        .post("/api/v1/auth/login")
+        .send({
+          email: userData.email,
+          password: userData.password,
+        });
+
+      expect(response.status).toBe(200);
 
       token = response.body.data.token;
     });
@@ -171,9 +184,7 @@ describe("Authentication API", () => {
         .set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toBe(200);
-
       expect(response.body.success).toBe(true);
-
       expect(response.body.message).toBe(
         "Logout successful."
       );

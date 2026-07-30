@@ -30,6 +30,9 @@ class DatasetController {
    */
   async upload(req, res, next) {
     try {
+      console.log("BODY:", req.body);
+console.log("FILE:", req.file);
+    
       const uploadData = {
         ...req.body,
         uploadedBy: req.user._id,
@@ -137,6 +140,86 @@ class DatasetController {
       return next(error);
     }
   }
+  /**
+ * Export validation report as CSV
+ */
+async exportCsv(req, res, next) {
+  try {
+    const csv = await DatasetService.exportCsv(req.params.id);
+
+    res.setHeader("Content-Type", "text/csv");
+
+    res.setHeader(
+      "Content-Disposition",
+      'attachment; filename="validation-report.csv"'
+    );
+
+    return res.send(csv);
+  } catch (error) {
+    return next(error);
+  }
+}
+async exportExcel(req, res, next) {
+  try {
+    const buffer =
+      await DatasetService.exportExcel(req.params.id);
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+
+    res.setHeader(
+      "Content-Disposition",
+      'attachment; filename="validation-report.xlsx"'
+    );
+
+    return res.send(buffer);
+  } catch (error) {
+    next(error);
+  }
+}
+/**
+ * Get dataset summary
+ */
+async getSummary(req, res, next) {
+  try {
+    const summary =
+      await DatasetService.getSummary(
+        req.params.id
+      );
+
+    return res.status(200).json(
+      ApiResponse.success(
+        "Dataset summary retrieved successfully.",
+        summary
+      )
+    );
+  } catch (error) {
+    next(error);
+  }
+}
+/**
+ * Download original uploaded dataset
+ */
+async downloadFile(req, res, next) {
+  try {
+    const file =
+      await DatasetService.downloadFile(req.params.id);
+
+    return res.download(
+      file.path,
+      file.originalFileName,
+       (error) => {
+        if (error) {
+          next(error);
+        }
+      }
+    );
+  } catch (error) {
+    next(error);
+  }
+}
 }
 
 export default new DatasetController();

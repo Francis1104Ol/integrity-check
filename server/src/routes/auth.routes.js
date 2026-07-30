@@ -6,9 +6,17 @@ const router = Router();
 
 /**
  * @swagger
+ * tags:
+ *   name: Authentication
+ *   description: User authentication and account management
+ */
+
+/**
+ * @swagger
  * /auth/register:
  *   post:
- *     summary: Register a new user
+ *     summary: Register a new validation officer
+ *     description: Creates a new user account and returns an authentication token.
  *     tags:
  *       - Authentication
  *     security: []
@@ -17,92 +25,105 @@ const router = Router();
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - firstName
- *               - lastName
- *               - email
- *               - password
- *             properties:
- *               firstName:
- *                 type: string
- *                 example: Tope
- *               lastName:
- *                 type: string
- *                 example: Seun
- *               email:
- *                 type: string
- *                 example: tope@gmail.com
- *               password:
- *                 type: string
- *                 example: Password123
+ *             $ref: '#/components/schemas/RegisterRequest'
  *     responses:
  *       201:
- *         description: Registration successful.
+ *         description: User registered successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
  *       409:
  *         description: Email already exists.
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
  */
 router.post("/register", AuthController.register);
+
 /**
  * @swagger
  * /auth/login:
  *   post:
- *     summary: Login a user
- *     tags: [Authentication]
+ *     summary: Authenticate a user
+ *     description: Authenticates a user and returns a JWT access token.
+ *     tags:
+ *       - Authentication
  *     security: []
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - email
- *               - password
- *             properties:
- *               email:
- *                 type: string
- *                 example: tope@gmail.com
- *               password:
- *                 type: string
- *                 example: Password123
+ *             $ref: '#/components/schemas/LoginRequest'
  *     responses:
  *       200:
- *         description: Login successful
+ *         description: Authentication successful.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
  *       401:
- *         description: Invalid credentials
+ *         $ref: '#/components/responses/Unauthorized'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
  */
 router.post("/login", AuthController.login);
+
 /**
  * @swagger
  * /auth/profile:
  *   get:
- *     summary: Get logged-in user's profile
- *     tags: [Authentication]
+ *     summary: Retrieve the authenticated user's profile
+ *     description: Returns the profile information of the currently authenticated user.
+ *     tags:
+ *       - Authentication
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: User profile retrieved successfully
+ *         description: User profile retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
  *       401:
- *         description: Unauthorized
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
  */
 router.get(
   "/profile",
   authMiddleware,
   AuthController.profile
 );
+
 /**
  * @swagger
  * /auth/logout:
  *   post:
- *     summary: Logout the current user
- *     tags: [Authentication]
+ *     summary: Logout the authenticated user
+ *     description: Logs out the currently authenticated user.
+ *     tags:
+ *       - Authentication
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Logout successful
+ *         description: User logged out successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
  */
 router.post(
   "/logout",

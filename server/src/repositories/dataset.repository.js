@@ -79,6 +79,12 @@ class DatasetRepository {
   async delete(id) {
     return Dataset.findByIdAndDelete(id);
   }
+async findSummaryById(id) {
+  return Dataset.findById(id).select(
+    "name status report.summary validatedAt"
+  );
+}
+  
 }
 
 export default new DatasetRepository();

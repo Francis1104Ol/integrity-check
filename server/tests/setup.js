@@ -14,6 +14,8 @@ afterEach(async () => {
   const collections = mongoose.connection.collections;
 
   for (const key in collections) {
+    if (key === "users") continue;
+
     await collections[key].deleteMany({});
   }
 });

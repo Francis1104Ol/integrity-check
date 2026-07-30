@@ -4,12 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  "test": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --runInBand",
-  "test:watch": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --watch",
-  "test:coverage": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --coverage",
-  "start": "node src/server.js",
-  "dev": "nodemon src/server.js"
-},
+    "test": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --runInBand",
+    "test:watch": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --watch",
+    "test:coverage": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+     "create-admin": "node scripts/createAdmin.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

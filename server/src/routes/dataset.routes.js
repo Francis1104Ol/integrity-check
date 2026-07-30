@@ -53,19 +53,6 @@ router.post(
   DatasetController.upload
 );
 
-/**
- * @swagger
- * /datasets:
- *   post:
- *     summary: Create dataset metadata
- *     tags: [Datasets]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       201:
- *         description: Dataset created successfully
- */
-router.post("/", DatasetController.create);
 
 /**
  * @swagger
@@ -203,4 +190,106 @@ router.get(
   DatasetController.exportPdf
 );
 
+/**
+ * @swagger
+ * /datasets/{id}/export/csv:
+ *   get:
+ *     summary: Export validation report as CSV
+ *     tags: [Datasets]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: CSV report downloaded successfully.
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+router.get(
+  "/:id/export/csv",
+  authMiddleware,
+  DatasetController.exportCsv
+);
+/**
+ * @swagger
+ * /datasets/{id}/export/excel:
+ *   get:
+ *     summary: Export validation report as Excel
+ *     tags: [Datasets]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Excel report downloaded successfully.
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+router.get(
+  "/:id/export/excel",
+  authMiddleware,
+  DatasetController.exportExcel
+);
+
+/**
+ * @swagger
+ * /datasets/{id}/summary:
+ *   get:
+ *     summary: Retrieve dataset validation summary
+ *     tags: [Datasets]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Dataset summary retrieved successfully.
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+router.get(
+  "/:id/summary",
+  authMiddleware,
+  DatasetController.getSummary
+);
+
+/**
+ * @swagger
+ * /datasets/{id}/file:
+ *   get:
+ *     summary: Download original uploaded dataset
+ *     tags: [Datasets]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Original dataset downloaded successfully.
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+router.get(
+  "/:id/file",
+  authMiddleware,
+  DatasetController.downloadFile
+);
 export default router;
