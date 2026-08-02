@@ -1,0 +1,8 @@
+const VALIDATION_SEVERITY = {
+
+    ERROR: "ERROR",
+
+    WARNING: "WARNING"
+};
+
+export default VALIDATION_SEVERITY;

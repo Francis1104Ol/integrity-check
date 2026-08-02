@@ -1,0 +1,6 @@
+const ROLES = {
+  ADMIN: "ADMIN",
+  VALIDATION_OFFICER: "VALIDATION_OFFICER",
+};
+
+export default ROLES;
