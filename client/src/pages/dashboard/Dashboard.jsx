@@ -1,83 +1,91 @@
-import { useEffect, useState } from "react";
 
 import DashboardLayout from "../../layouts/DashboardLayout";
-
-import { DashboardService } from "../../services/dashboard.service";
-
+import { useDashboard } from "../../hooks/useDashboard";
 import StatCard from "../../components/dashboard/StatCard";
+import DashboardHeader from "../../components/dashboard/DashboardHeader";
+import QuickActions from "../../components/dashboard/QuickActions";
+import RecentDatasets from "../../components/dashboard/RecentDatasets";
+import ValidationSummary from "../../components/dashboard/ValidationSummary";
+import UploadStatistics from "../../components/dashboard/UploadStatistics";
 
 export default function Dashboard() {
-  const [stats, setStats] = useState(null);
-
-  const [loading, setLoading] =
-    useState(true);
-
-  useEffect(() => {
-    async function fetchDashboard() {
-      try {
-        const response =
-          await DashboardService.getStats();
-
-        setStats(response.data.data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchDashboard();
-  }, []);
-
+const { stats, loading } = useDashboard();
   return (
-    <DashboardLayout>
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold">
-          Dashboard
-        </h1>
+  <DashboardLayout>
+    <DashboardHeader />
 
+    
+
+    {loading ? (
+      <div className="rounded-2xl bg-white p-8 shadow-sm">
         <p className="text-slate-500">
-          Welcome back 👋
+          Loading dashboard...
         </p>
       </div>
-
-      {loading ? (
-        <p>Loading dashboard...</p>
-      ) : (
+    ) : (
+      <>
+        {/* Statistics */}
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           <StatCard
             title="Datasets"
             value={
-              stats?.overview
-                ?.totalDatasets ?? 0
+              stats?.overview?.totalDatasets ?? 0
             }
+            subtitle="Uploaded datasets"
           />
 
           <StatCard
             title="Records"
             value={
-              stats?.overview
-                ?.totalRecords ?? 0
+              stats?.overview?.totalRecords ?? 0
             }
+            subtitle="Processed records"
             color="bg-green-600"
           />
 
           <StatCard
             title="Duplicates"
             value={
-              stats?.overview
-                ?.duplicateRecords ?? 0
+              stats?.overview?.duplicateRecords ??
+              0
             }
+            subtitle="Duplicate records"
             color="bg-red-500"
           />
 
           <StatCard
-            title="Processing Time"
-            value={`${stats?.overview?.averageProcessingTime ?? 0} ms`}
+            title="Avg. Processing"
+            value={`${
+              stats?.overview
+                ?.averageProcessingTime ?? 0
+            } ms`}
+            subtitle="Average validation time"
             color="bg-purple-600"
           />
         </div>
-      )}
-    </DashboardLayout>
-  );
+
+        {/* Lower Section */}
+        <div className="mt-8 grid gap-6 xl:grid-cols-4">
+  <div className="xl:col-span-2">
+    <RecentDatasets
+      datasets={stats?.recentDatasets || []}
+    />
+  </div>
+
+  <ValidationSummary
+    validation={stats?.validation}
+  />
+
+  <UploadStatistics
+    uploads={stats?.uploads}
+  />
+</div>
+
+<div className="mt-8">
+  <QuickActions />
+</div>
+      </>
+    )}
+  </DashboardLayout>
+);
 }

@@ -24,9 +24,13 @@ export default function Login() {
 
     const response = await AuthService.login(data);
 
-    const { token, user } = response.data.data;
+    const { token, user } =
+      response.data.data;
 
-    localStorage.setItem("token", token);
+    localStorage.setItem(
+      "token",
+      token
+    );
 
     localStorage.setItem(
       "user",
@@ -37,6 +41,8 @@ export default function Login() {
 
     navigate("/dashboard");
   } catch (error) {
+    console.error(error);
+
     toast.error(
       error.response?.data?.message ||
         "Login failed"

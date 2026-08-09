@@ -1,3 +1,6 @@
+import UploadDataset from "../pages/datasets/UploadDataset";
+import Datasets from "../pages/datasets/Datasets";
+import DatasetDetails from "../pages/datasets/DatasetDetails";
 import {
   Navigate,
   Route,
@@ -29,6 +32,22 @@ export default function AppRoutes() {
         path="/dashboard"
         element={<Dashboard />}
       />
+
+      <Route
+    path="/datasets"
+    element={<Datasets />}
+/>
+
+<Route
+    path="/datasets/upload"
+    element={<UploadDataset />}
+/>
+<Route
+  path="/datasets/:id"
+  element={<DatasetDetails />}
+/>
     </Routes>
+
+    
   );
 }

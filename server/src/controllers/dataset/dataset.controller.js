@@ -220,6 +220,27 @@ async downloadFile(req, res, next) {
     next(error);
   }
 }
+
+/**
+ * Get a specific row from the original uploaded dataset
+ */
+async getRow(req, res, next) {
+  try {
+    const row = await DatasetService.getRow(
+      req.params.id,
+      Number(req.params.rowNumber)
+    );
+
+    return res.status(200).json(
+      ApiResponse.success(
+        "Dataset row retrieved successfully.",
+        row
+      )
+    );
+  } catch (error) {
+    return next(error);
+  }
+}
 }
 
 export default new DatasetController();

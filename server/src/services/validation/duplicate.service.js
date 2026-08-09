@@ -15,8 +15,14 @@ class DuplicateService {
       const row = index + 2;
 
       const nin = String(record.nin ?? "").trim();
-      const phone = String(record.phone ?? "").trim();
-      const coordinate = String(record.farmCoordinate ?? "").trim();
+
+      const phone = String(record.phone ?? "")
+        .trim()
+        .replace(/[\s-]/g, "");
+
+      const coordinate = String(
+        record.farmCoordinate ?? ""
+      ).trim();
 
       // Duplicate NIN
       if (nin) {
@@ -27,7 +33,9 @@ class DuplicateService {
             value: nin,
             type: VALIDATION_TYPES.DUPLICATE,
             severity: VALIDATION_SEVERITY.ERROR,
-            message: `Duplicate NIN. First found in row ${seenNins.get(nin)}.`,
+            message: `Duplicate NIN. First found in row ${seenNins.get(
+              nin
+            )}.`,
           });
         } else {
           seenNins.set(nin, row);
@@ -43,7 +51,9 @@ class DuplicateService {
             value: phone,
             type: VALIDATION_TYPES.DUPLICATE,
             severity: VALIDATION_SEVERITY.ERROR,
-            message: `Duplicate phone number. First found in row ${seenPhones.get(phone)}.`,
+            message: `Duplicate phone number. First found in row ${seenPhones.get(
+              phone
+            )}.`,
           });
         } else {
           seenPhones.set(phone, row);
@@ -59,7 +69,9 @@ class DuplicateService {
             value: coordinate,
             type: VALIDATION_TYPES.DUPLICATE,
             severity: VALIDATION_SEVERITY.WARNING,
-            message: `Duplicate farm coordinate. First found in row ${seenCoordinates.get(coordinate)}.`,
+            message: `Duplicate farm coordinate. First found in row ${seenCoordinates.get(
+              coordinate
+            )}.`,
           });
         } else {
           seenCoordinates.set(coordinate, row);

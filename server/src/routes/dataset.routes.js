@@ -292,4 +292,35 @@ router.get(
   authMiddleware,
   DatasetController.downloadFile
 );
+
+/**
+ * @swagger
+ * /datasets/{id}/rows/{rowNumber}:
+ *   get:
+ *     summary: Get a specific row from the original dataset
+ *     tags: [Datasets]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: rowNumber
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Dataset row retrieved successfully
+ *       404:
+ *         description: Dataset or row not found
+ */
+router.get(
+  "/:id/rows/:rowNumber",
+  DatasetController.getRow
+);
 export default router;
+

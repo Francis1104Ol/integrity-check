@@ -14,6 +14,7 @@ export default function Sidebar() {
           <SidebarItem
             key={item.path}
             {...item}
+            end={item.path === "/datasets"}
           />
         ))}
       </nav>

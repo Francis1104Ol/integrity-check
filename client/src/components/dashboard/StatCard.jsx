@@ -1,21 +1,28 @@
 export default function StatCard({
   title,
   value,
+  subtitle,
   color = "bg-blue-600",
 }) {
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-sm border">
+    <div className="rounded-2xl border bg-white p-6 shadow-sm transition hover:shadow-md">
       <div
-        className={`mb-4 h-3 w-16 rounded-full ${color}`}
+        className={`mb-5 h-2 w-14 rounded-full ${color}`}
       />
 
-      <h3 className="text-sm text-slate-500">
+      <p className="text-sm text-slate-500">
         {title}
-      </h3>
+      </p>
 
       <h2 className="mt-2 text-3xl font-bold">
         {value}
       </h2>
+
+      {subtitle && (
+        <p className="mt-3 text-sm text-slate-400">
+          {subtitle}
+        </p>
+      )}
     </div>
   );
 }

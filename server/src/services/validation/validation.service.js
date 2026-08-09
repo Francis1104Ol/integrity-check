@@ -14,19 +14,20 @@ class ValidationService {
 
     errors.push(...requiredResult.errors);
 
-    // Duplicates
+    // Duplicate detection
     const duplicateResult =
       DuplicateService.detect(records);
 
     errors.push(...duplicateResult.errors);
     warnings.push(...duplicateResult.warnings);
 
-    // Formats
+    // Format validation
     const formatResult =
       FormatValidationService.validate(records);
 
     errors.push(...formatResult.errors);
 
+    // Build final report
     return ReportService.build(
       records,
       errors,

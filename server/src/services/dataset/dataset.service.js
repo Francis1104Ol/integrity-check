@@ -6,14 +6,16 @@ import HeaderMappingService from "../mapping/header-mapping.service.js";
 import DATASET_STATUS from "../../constants/datasetStatus.js";
 import ExportService from "../export/export.service.js";
 import path from "path";
-class DatasetService {
-  /**
-   * Upload and validate a dataset
-   */
-  async upload(uploadData) {
-    const { name, description, uploadedBy, file } = uploadData;
 
-    // Validate upload
+class DatasetService {
+  async upload(uploadData) {
+    const {
+      name,
+      description,
+      uploadedBy,
+      file,
+    } = uploadData;
+
     if (!file) {
       throw new ApiError(
         400,
@@ -21,45 +23,45 @@ class DatasetService {
       );
     }
 
-    // Create initial dataset record
-    const dataset = await DatasetRepository.create({
-      name,
-      description,
-      uploadedBy,
+    const dataset =
+      await DatasetRepository.create({
+        name,
+        description,
+        uploadedBy,
 
-      originalFileName: file.originalname,
-      storedFileName: file.filename,
-      filePath: file.path,
-      mimeType: file.mimetype,
-      fileSize: file.size,
+        originalFileName: file.originalname,
+        storedFileName: file.filename,
+        filePath: file.path,
+        mimeType: file.mimetype,
+        fileSize: file.size,
 
-      status: DATASET_STATUS.UPLOADED,
-    });
+        status: DATASET_STATUS.UPLOADED,
+      });
 
-    // Mark as processing
-    dataset.status = DATASET_STATUS.PROCESSING;
+    dataset.status =
+      DATASET_STATUS.PROCESSING;
+
     await dataset.save();
 
     const startedAt = Date.now();
 
     try {
-      // Read uploaded Excel file
-      const records = ExcelService.read(file.path);
+      const records =
+        ExcelService.read(file.path);
 
-      // Normalize column headers
       const normalizedRecords =
         HeaderMappingService.normalize(records);
 
-      // Run validation
       const report =
-        ValidationService.validate(normalizedRecords);
+        ValidationService.validate(
+          normalizedRecords
+        );
 
-      // Calculate processing time
-      const processingTime = Date.now() - startedAt;
+      const processingTime =
+        Date.now() - startedAt;
 
-      // Update dataset statistics
       dataset.totalRecords =
-        report.statistics.totalRecords;
+        report.summary.totalRecords;
 
       dataset.duplicateRecords =
         report.statistics.duplicateRecords;
@@ -81,33 +83,36 @@ class DatasetService {
         report,
       };
     } catch (error) {
-      dataset.status = DATASET_STATUS.FAILED;
+      dataset.status =
+        DATASET_STATUS.FAILED;
+
       await dataset.save();
 
       throw error;
     }
   }
 
-  /**
-   * Create dataset manually
-   * (Internal/Admin use only)
-   */
   async create(datasetData) {
-    return await DatasetRepository.create(datasetData);
+    return DatasetRepository.create(
+      datasetData
+    );
   }
 
-  /**
-   * Get paginated datasets
-   */
   async getAll(query) {
-    const page = Math.max(Number(query.page) || 1, 1);
+    const page = Math.max(
+      Number(query.page) || 1,
+      1
+    );
 
     const limit = Math.min(
-      Math.max(Number(query.limit) || 10, 1),
+      Math.max(
+        Number(query.limit) || 10,
+        1
+      ),
       100
     );
 
-    return await DatasetRepository.findAll({
+    return DatasetRepository.findAll({
       page,
       limit,
       search: query.search || "",
@@ -116,27 +121,29 @@ class DatasetService {
     });
   }
 
-  /**
-   * Get dataset by ID
-   */
   async getById(id) {
-    const dataset = await DatasetRepository.findById(id);
+    const dataset =
+      await DatasetRepository.findById(id);
 
     if (!dataset) {
-      throw new ApiError(404, "Dataset not found.");
+      throw new ApiError(
+        404,
+        "Dataset not found."
+      );
     }
 
     return dataset;
   }
 
-  /**
-   * Delete dataset
-   */
   async delete(id) {
-    const dataset = await DatasetRepository.findById(id);
+    const dataset =
+      await DatasetRepository.findById(id);
 
     if (!dataset) {
-      throw new ApiError(404, "Dataset not found.");
+      throw new ApiError(
+        404,
+        "Dataset not found."
+      );
     }
 
     await DatasetRepository.delete(id);
@@ -146,77 +153,124 @@ class DatasetService {
     };
   }
 
-  /**
-   * Get validation report
-   */
   async getReport(id) {
     const dataset =
       await DatasetRepository.findReportById(id);
 
     if (!dataset) {
-      throw new ApiError(404, "Dataset not found.");
+      throw new ApiError(
+        404,
+        "Dataset not found."
+      );
     }
 
     return dataset;
   }
 
-  /**
-   * Export validation report as PDF
-   */
   async exportPdf(id) {
     const dataset =
       await DatasetRepository.findById(id);
 
     if (!dataset) {
-      throw new ApiError(404, "Dataset not found.");
+      throw new ApiError(
+        404,
+        "Dataset not found."
+      );
     }
 
-    return await ExportService.generatePdf(dataset);
+    return ExportService.generatePdf(dataset);
   }
+
   async exportCsv(id) {
-  const dataset = await DatasetRepository.findById(id);
+    const dataset =
+      await DatasetRepository.findById(id);
 
-  if (!dataset) {
-    throw new ApiError(404, "Dataset not found.");
+    if (!dataset) {
+      throw new ApiError(
+        404,
+        "Dataset not found."
+      );
+    }
+
+    return ExportService.generateCsv(dataset);
   }
 
-  return ExportService.generateCsv(dataset);
-}
-async exportExcel(id) {
-  const dataset = await DatasetRepository.findById(id);
+  async exportExcel(id) {
+    const dataset =
+      await DatasetRepository.findById(id);
 
-  if (!dataset) {
-    throw new ApiError(404, "Dataset not found.");
+    if (!dataset) {
+      throw new ApiError(
+        404,
+        "Dataset not found."
+      );
+    }
+
+    return ExportService.generateExcel(dataset);
   }
 
-  return ExportService.generateExcel(dataset);
-}
-async getSummary(id) {
-  const dataset =
-    await DatasetRepository.findSummaryById(id);
+  async getSummary(id) {
+    const dataset =
+      await DatasetRepository.findSummaryById(id);
 
-  if (!dataset) {
-    throw new ApiError(404, "Dataset not found.");
+    if (!dataset) {
+      throw new ApiError(
+        404,
+        "Dataset not found."
+      );
+    }
+
+    return {
+      datasetName: dataset.name,
+      validatedAt: dataset.validatedAt,
+      ...dataset.report.summary,
+    };
   }
 
-  return {
-    datasetName: dataset.name,
-    validatedAt: dataset.validatedAt,
-    ...dataset.report.summary,
-  };
-}
-async downloadFile(id) {
-  const dataset = await DatasetRepository.findById(id);
+  async downloadFile(id) {
+    const dataset =
+      await DatasetRepository.findById(id);
 
-  if (!dataset) {
-    throw new ApiError(404, "Dataset not found.");
+    if (!dataset) {
+      throw new ApiError(
+        404,
+        "Dataset not found."
+      );
+    }
+
+    return {
+      path: path.resolve(dataset.filePath),
+      originalFileName:
+        dataset.originalFileName,
+    };
   }
 
-  return {
-    path: path.resolve(dataset.filePath),
-    originalFileName: dataset.originalFileName,
-  };
-}
+  async getRow(id, rowNumber) {
+    if (
+      !Number.isInteger(rowNumber) ||
+      rowNumber < 2
+    ) {
+      throw new ApiError(
+        400,
+        "Invalid row number."
+      );
+    }
+
+    const dataset =
+      await DatasetRepository.findById(id);
+
+    if (!dataset) {
+      throw new ApiError(
+        404,
+        "Dataset not found."
+      );
+    }
+
+    return ExcelService.getRow(
+      dataset.filePath,
+      rowNumber
+    );
+  }
 }
 
 export default new DatasetService();

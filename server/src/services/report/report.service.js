@@ -1,15 +1,26 @@
 import VALIDATION_FIELDS from "../../constants/validationFields.js";
 import VALIDATION_TYPES from "../../constants/validationTypes.js";
 import VALIDATION_STATUS from "../../constants/validationStatus.js";
+
 class ReportService {
   build(records, errors, warnings) {
-    const invalidRows = new Set(errors.map(error => error.row));
-    const warningRows = new Set(warnings.map(warning => warning.row));
+    const invalidRows = new Set(
+      errors.map((error) => error.row)
+    );
 
-    const statistics = this.buildStatistics(errors, warnings);
+    const warningRows = new Set(
+      warnings.map((warning) => warning.row)
+    );
+
+    const statistics = this.buildStatistics(
+      errors,
+      warnings
+    );
 
     const summary = {
-      status: errors.length ? VALIDATION_STATUS.FAILED : VALIDATION_STATUS.PASSED,
+      status: errors.length
+        ? VALIDATION_STATUS.FAILED
+        : VALIDATION_STATUS.PASSED,
 
       message: errors.length
         ? "Validation completed with errors."
@@ -20,11 +31,9 @@ class ReportService {
       validRecords:
         records.length - invalidRows.size,
 
-      invalidRecords:
-        invalidRows.size,
+      invalidRecords: invalidRows.size,
 
-      warningRecords:
-        warningRows.size,
+      warningRecords: warningRows.size,
 
       healthScore: this.calculateHealthScore(
         records.length,
@@ -101,7 +110,7 @@ class ReportService {
 
   countErrors(errors, field, type) {
     return errors.filter(
-      error =>
+      (error) =>
         error.field === field &&
         error.type === type
     ).length;
@@ -109,7 +118,7 @@ class ReportService {
 
   countWarnings(warnings, field, type) {
     return warnings.filter(
-      warning =>
+      (warning) =>
         warning.field === field &&
         warning.type === type
     ).length;
@@ -117,7 +126,7 @@ class ReportService {
 
   countErrorsByType(errors, type) {
     return errors.filter(
-      error => error.type === type
+      (error) => error.type === type
     ).length;
   }
 

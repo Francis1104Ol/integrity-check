@@ -4,20 +4,20 @@ import VALIDATION_SEVERITY from "../../constants/validationSeverity.js";
 
 class FormatValidationService {
   validate(records) {
-  const errors = [];
+    const errors = [];
 
-  records.forEach((record, index) => {
-    const row = index + 2;
+    records.forEach((record, index) => {
+      const row = index + 2;
 
-    this.validateNIN(record, row, errors);
-    this.validatePhone(record, row, errors);
-    this.validateCoordinate(record, row, errors);
-  });
+      this.validateNIN(record, row, errors);
+      this.validatePhone(record, row, errors);
+      this.validateCoordinate(record, row, errors);
+    });
 
-  return {
-    errors,
-  };
-}
+    return {
+      errors,
+    };
+  }
 
   validateNIN(record, row, errors) {
     const nin = String(record.nin ?? "").trim();
@@ -41,8 +41,12 @@ class FormatValidationService {
 
     if (!phone) return;
 
+    const normalizedPhone = phone.replace(/[\s-]/g, "");
+
     const validPhone =
-      /^(0\d{10}|234\d{10})$/.test(phone);
+      /^0\d{10}$/.test(normalizedPhone) ||
+      /^234\d{10}$/.test(normalizedPhone) ||
+      /^\d{10}$/.test(normalizedPhone);
 
     if (!validPhone) {
       errors.push({
@@ -57,13 +61,15 @@ class FormatValidationService {
   }
 
   validateCoordinate(record, row, errors) {
-    const coordinate = String(record.farmCoordinate ?? "").trim();
+    const coordinate = String(
+      record.farmCoordinate ?? ""
+    ).trim();
 
     if (!coordinate) return;
 
     const parts = coordinate
       .split(",")
-      .map(part => part.trim());
+      .map((part) => part.trim());
 
     if (parts.length !== 2) {
       errors.push({
