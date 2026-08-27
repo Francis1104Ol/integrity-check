@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { Eye, EyeOff, ShieldCheck } from "lucide-react";
 import toast from "react-hot-toast";
@@ -141,6 +141,15 @@ export default function Login() {
               ? "Signing in..."
               : "Login"}
           </button>
+          <div className="mt-6 text-center text-sm text-slate-500">
+  Don't have an account?{" "}
+  <Link
+    to="/register"
+    className="font-semibold text-blue-600 hover:text-blue-700"
+  >
+    Create an account
+  </Link>
+</div>
         </form>
       </div>
     </div>

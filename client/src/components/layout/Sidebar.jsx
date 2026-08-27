@@ -12,7 +12,7 @@ export default function Sidebar() {
       <nav className="flex-1 space-y-2 p-4">
         {navigation.map((item) => (
           <SidebarItem
-            key={item.path}
+            key={item.title}
             {...item}
             end={item.path === "/datasets"}
           />

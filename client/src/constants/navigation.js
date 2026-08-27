@@ -36,7 +36,7 @@ const navigation = [
   {
     title: "Logout",
     icon: LogOut,
-    path: "/logout",
+    action: "logout",
   },
 ];
 

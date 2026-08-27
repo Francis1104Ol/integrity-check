@@ -1,32 +1,24 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 import { DatasetService } from "../services/dataset.service";
 
 export function useDataset() {
   const [datasets, setDatasets] = useState([]);
-  const [pagination, setPagination] =
-    useState(null);
-  const [loading, setLoading] =
-    useState(true);
+  const [pagination, setPagination] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  async function fetchDatasets(params = {}) {
+  const fetchDatasets = useCallback(async (params = {}) => {
     try {
       setLoading(true);
 
       const response =
         await DatasetService.getAll(params);
 
-      const data =
-        response.data.data;
+      const data = response.data.data;
 
-      setDatasets(
-        data?.datasets || []
-      );
-
-      setPagination(
-        data?.pagination || null
-      );
+      setDatasets(data.datasets || []);
+      setPagination(data.pagination || null);
 
       return data;
     } catch (error) {
@@ -39,11 +31,11 @@ export function useDataset() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     fetchDatasets();
-  }, []);
+  }, [fetchDatasets]);
 
   async function getAll(params = {}) {
     const response =
@@ -59,31 +51,12 @@ export function useDataset() {
     return response.data.data;
   }
 
-  async function getSummary(id) {
-    const response =
-      await DatasetService.getSummary(id);
-
-    return response.data.data;
-  }
-
-  async function getRow(id, rowNumber) {
-    const response =
-      await DatasetService.getRow(
-        id,
-        rowNumber
-      );
-
-    return response.data.data;
-  }
-
   async function upload(formData) {
     try {
       setLoading(true);
 
       const response =
-        await DatasetService.upload(
-          formData
-        );
+        await DatasetService.upload(formData);
 
       toast.success(
         "Dataset uploaded successfully."
@@ -148,8 +121,6 @@ export function useDataset() {
 
     getAll,
     getById,
-    getSummary,
-    getRow,
 
     upload,
     remove,
