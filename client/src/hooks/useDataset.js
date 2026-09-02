@@ -50,6 +50,14 @@ export function useDataset() {
 
     return response.data.data;
   }
+  async function getRow(id, rowNumber) {
+  const response = await DatasetService.getRow(
+    id,
+    rowNumber
+  );
+
+  return response.data.data;
+}
 
   async function upload(formData) {
     try {
@@ -121,6 +129,7 @@ export function useDataset() {
 
     getAll,
     getById,
+    getRow,
 
     upload,
     remove,

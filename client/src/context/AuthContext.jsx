@@ -1,44 +1,74 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 import { AuthService } from "../services/auth.service";
 
-const AuthContext = createContext();
+const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function loadUser() {
-      try {
-        const response = await AuthService.profile();
+  async function loadUser() {
+    try {
+      const token = localStorage.getItem("token");
 
-        setUser(response.data.data);
-      } catch {
+      if (!token) {
         setUser(null);
-      } finally {
-        setLoading(false);
+        return null;
       }
-    }
 
-    if (localStorage.getItem("token")) {
-      loadUser();
-    } else {
+      const response =
+        await AuthService.profile();
+
+      const profile =
+        response.data.data;
+
+      setUser(profile);
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify(profile)
+      );
+
+      return profile;
+    } catch (error) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+
+      setUser(null);
+
+      return null;
+    }
+  }
+
+  useEffect(() => {
+    async function initializeAuth() {
+      setLoading(true);
+      await loadUser();
       setLoading(false);
     }
+
+    initializeAuth();
   }, []);
 
   async function login(token, user) {
     localStorage.setItem("token", token);
-
-    localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem(
+      "user",
+      JSON.stringify(user)
+    );
 
     setUser(user);
   }
 
   function logout() {
-    localStorage.clear();
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
 
     setUser(null);
   }
@@ -50,7 +80,8 @@ export function AuthProvider({ children }) {
         loading,
         login,
         logout,
-        isAuthenticated: !!user,
+        refresh: loadUser,
+        isAuthenticated: Boolean(user),
       }}
     >
       {children}
@@ -58,4 +89,6 @@ export function AuthProvider({ children }) {
   );
 }
 
-export const useAuth = () => useContext(AuthContext);
+export function useAuth() {
+  return useContext(AuthContext);
+}

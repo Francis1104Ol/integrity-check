@@ -6,13 +6,16 @@ class DatasetRepository {
   }
 
   async findAll({
+    userId,
     page = 1,
     limit = 10,
     search = "",
     status,
     sort = "createdAt",
   }) {
-    const filter = {};
+    const filter = {
+      uploadedBy: userId,
+    };
 
     if (search) {
       filter.name = {
@@ -52,23 +55,31 @@ class DatasetRepository {
     };
   }
 
-  async findById(id) {
-    return Dataset.findById(id)
-      .populate(
-        "uploadedBy",
-        "firstName lastName email"
-      );
+  async findById(id, userId) {
+    return Dataset.findOne({
+      _id: id,
+      uploadedBy: userId,
+    }).populate(
+      "uploadedBy",
+      "firstName lastName email"
+    );
   }
 
-  async findReportById(id) {
-    return Dataset.findById(id).select(
+  async findReportById(id, userId) {
+    return Dataset.findOne({
+      _id: id,
+      uploadedBy: userId,
+    }).select(
       "name status validatedAt report"
     );
   }
 
-  async update(id, updateData) {
-    return Dataset.findByIdAndUpdate(
-      id,
+  async update(id, userId, updateData) {
+    return Dataset.findOneAndUpdate(
+      {
+        _id: id,
+        uploadedBy: userId,
+      },
       updateData,
       {
         returnDocument: "after",
@@ -76,15 +87,21 @@ class DatasetRepository {
     );
   }
 
-  async delete(id) {
-    return Dataset.findByIdAndDelete(id);
+  async delete(id, userId) {
+    return Dataset.findOneAndDelete({
+      _id: id,
+      uploadedBy: userId,
+    });
   }
-async findSummaryById(id) {
-  return Dataset.findById(id).select(
-    "name status report.summary validatedAt"
-  );
-}
-  
+
+  async findSummaryById(id, userId) {
+    return Dataset.findOne({
+      _id: id,
+      uploadedBy: userId,
+    }).select(
+      "name status report.summary validatedAt"
+    );
+  }
 }
 
 export default new DatasetRepository();

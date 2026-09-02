@@ -28,6 +28,8 @@ router.use(authMiddleware);
  *       500:
  *         description: Internal server error
  */
-router.get("/stats", DashboardController.getStats);
+router.get(
+    "/stats", DashboardController.getStats
+);
 
 export default router;

@@ -30,9 +30,6 @@ class DatasetController {
    */
   async upload(req, res, next) {
     try {
-      console.log("BODY:", req.body);
-console.log("FILE:", req.file);
-    
       const uploadData = {
         ...req.body,
         uploadedBy: req.user._id,
@@ -57,7 +54,10 @@ console.log("FILE:", req.file);
    */
   async getAll(req, res, next) {
     try {
-      const datasets = await DatasetService.getAll(req.query);
+      const datasets = await DatasetService.getAll(
+        req.query,
+        req.user._id
+      );
 
       return res.status(200).json(
         ApiResponse.success(
@@ -75,7 +75,10 @@ console.log("FILE:", req.file);
    */
   async getById(req, res, next) {
     try {
-      const dataset = await DatasetService.getById(req.params.id);
+      const dataset = await DatasetService.getById(
+        req.params.id,
+        req.user._id
+      );
 
       return res.status(200).json(
         ApiResponse.success(
@@ -93,7 +96,10 @@ console.log("FILE:", req.file);
    */
   async delete(req, res, next) {
     try {
-      const response = await DatasetService.delete(req.params.id);
+      const response = await DatasetService.delete(
+        req.params.id,
+        req.user._id
+      );
 
       return res.status(200).json(
         ApiResponse.success(response.message)
@@ -108,7 +114,10 @@ console.log("FILE:", req.file);
    */
   async getReport(req, res, next) {
     try {
-      const report = await DatasetService.getReport(req.params.id);
+      const report = await DatasetService.getReport(
+        req.params.id,
+        req.user._id
+      );
 
       return res.status(200).json(
         ApiResponse.success(
@@ -126,7 +135,10 @@ console.log("FILE:", req.file);
    */
   async exportPdf(req, res, next) {
     try {
-      const pdfBuffer = await DatasetService.exportPdf(req.params.id);
+      const pdfBuffer = await DatasetService.exportPdf(
+        req.params.id,
+        req.user._id
+      );
 
       res.setHeader("Content-Type", "application/pdf");
 
@@ -140,107 +152,122 @@ console.log("FILE:", req.file);
       return next(error);
     }
   }
+
   /**
- * Export validation report as CSV
- */
-async exportCsv(req, res, next) {
-  try {
-    const csv = await DatasetService.exportCsv(req.params.id);
-
-    res.setHeader("Content-Type", "text/csv");
-
-    res.setHeader(
-      "Content-Disposition",
-      'attachment; filename="validation-report.csv"'
-    );
-
-    return res.send(csv);
-  } catch (error) {
-    return next(error);
-  }
-}
-async exportExcel(req, res, next) {
-  try {
-    const buffer =
-      await DatasetService.exportExcel(req.params.id);
-
-    res.setHeader(
-      "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    );
-
-    res.setHeader(
-      "Content-Disposition",
-      'attachment; filename="validation-report.xlsx"'
-    );
-
-    return res.send(buffer);
-  } catch (error) {
-    next(error);
-  }
-}
-/**
- * Get dataset summary
- */
-async getSummary(req, res, next) {
-  try {
-    const summary =
-      await DatasetService.getSummary(
-        req.params.id
+   * Export validation report as CSV
+   */
+  async exportCsv(req, res, next) {
+    try {
+      const csv = await DatasetService.exportCsv(
+        req.params.id,
+        req.user._id
       );
 
-    return res.status(200).json(
-      ApiResponse.success(
-        "Dataset summary retrieved successfully.",
-        summary
-      )
-    );
-  } catch (error) {
-    next(error);
-  }
-}
-/**
- * Download original uploaded dataset
- */
-async downloadFile(req, res, next) {
-  try {
-    const file =
-      await DatasetService.downloadFile(req.params.id);
+      res.setHeader("Content-Type", "text/csv");
 
-    return res.download(
-      file.path,
-      file.originalFileName,
-       (error) => {
-        if (error) {
-          next(error);
+      res.setHeader(
+        "Content-Disposition",
+        'attachment; filename="validation-report.csv"'
+      );
+
+      return res.send(csv);
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  /**
+   * Export validation report as Excel
+   */
+  async exportExcel(req, res, next) {
+    try {
+      const buffer = await DatasetService.exportExcel(
+        req.params.id,
+        req.user._id
+      );
+
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+
+      res.setHeader(
+        "Content-Disposition",
+        'attachment; filename="validation-report.xlsx"'
+      );
+
+      return res.send(buffer);
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  /**
+   * Get dataset summary
+   */
+  async getSummary(req, res, next) {
+    try {
+      const summary = await DatasetService.getSummary(
+        req.params.id,
+        req.user._id
+      );
+
+      return res.status(200).json(
+        ApiResponse.success(
+          "Dataset summary retrieved successfully.",
+          summary
+        )
+      );
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  /**
+   * Download original uploaded dataset
+   */
+  async downloadFile(req, res, next) {
+    try {
+      const file = await DatasetService.downloadFile(
+        req.params.id,
+        req.user._id
+      );
+
+      return res.download(
+        file.path,
+        file.originalFileName,
+        (error) => {
+          if (error) {
+            next(error);
+          }
         }
-      }
-    );
-  } catch (error) {
-    next(error);
+      );
+    } catch (error) {
+      next(error);
+    }
   }
-}
 
-/**
- * Get a specific row from the original uploaded dataset
- */
-async getRow(req, res, next) {
-  try {
-    const row = await DatasetService.getRow(
-      req.params.id,
-      Number(req.params.rowNumber)
-    );
+  /**
+   * Get a specific row from the original uploaded dataset
+   */
+  async getRow(req, res, next) {
+    try {
+      const row = await DatasetService.getRow(
+        req.params.id,
+        Number(req.params.rowNumber),
+        req.user._id
+      );
 
-    return res.status(200).json(
-      ApiResponse.success(
-        "Dataset row retrieved successfully.",
-        row
-      )
-    );
-  } catch (error) {
-    return next(error);
+      return res.status(200).json(
+        ApiResponse.success(
+          "Dataset row retrieved successfully.",
+          row
+        )
+      );
+    } catch (error) {
+      return next(error);
+    }
   }
-}
 }
 
 export default new DatasetController();

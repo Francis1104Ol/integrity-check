@@ -8,7 +8,9 @@ class DashboardController {
   async getStats(req, res, next) {
     try {
       const dashboard =
-        await DashboardService.getStats();
+        await DashboardService.getStats(
+          req.user._id
+        );
 
       return res.status(200).json(
         ApiResponse.success(

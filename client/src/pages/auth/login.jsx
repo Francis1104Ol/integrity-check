@@ -3,11 +3,12 @@ import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { Eye, EyeOff, ShieldCheck } from "lucide-react";
 import toast from "react-hot-toast";
-
+import { useAuth } from "../../context/AuthContext";
 import { AuthService } from "../../services/auth.service";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -24,18 +25,9 @@ export default function Login() {
 
     const response = await AuthService.login(data);
 
-    const { token, user } =
-      response.data.data;
+    const { token, user } = response.data.data;
 
-    localStorage.setItem(
-      "token",
-      token
-    );
-
-    localStorage.setItem(
-      "user",
-      JSON.stringify(user)
-    );
+    await login(token, user);
 
     toast.success("Login successful");
 

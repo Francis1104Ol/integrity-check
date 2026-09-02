@@ -212,7 +212,6 @@ router.get(
  */
 router.get(
   "/:id/export/csv",
-  authMiddleware,
   DatasetController.exportCsv
 );
 /**
@@ -237,7 +236,6 @@ router.get(
  */
 router.get(
   "/:id/export/excel",
-  authMiddleware,
   DatasetController.exportExcel
 );
 
@@ -263,7 +261,6 @@ router.get(
  */
 router.get(
   "/:id/summary",
-  authMiddleware,
   DatasetController.getSummary
 );
 
@@ -289,7 +286,6 @@ router.get(
  */
 router.get(
   "/:id/file",
-  authMiddleware,
   DatasetController.downloadFile
 );
 

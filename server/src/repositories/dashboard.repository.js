@@ -1,7 +1,7 @@
 import Dataset from "../models/dataset.model.js";
 
 class DashboardRepository {
-  async getStats() {
+  async getStats(userId) {
     const now = new Date();
 
     const today = new Date(
@@ -27,6 +27,12 @@ class DashboardRepository {
       recentDatasets,
     ] = await Promise.all([
       Dataset.aggregate([
+        {
+          $match: {
+            uploadedBy: userId,
+          },
+        },
+
         {
           $group: {
             _id: null,
@@ -96,24 +102,29 @@ class DashboardRepository {
       ]),
 
       Dataset.countDocuments({
+        uploadedBy: userId,
         createdAt: {
           $gte: today,
         },
       }),
 
       Dataset.countDocuments({
+        uploadedBy: userId,
         createdAt: {
           $gte: week,
         },
       }),
 
       Dataset.countDocuments({
+        uploadedBy: userId,
         createdAt: {
           $gte: month,
         },
       }),
 
-      Dataset.find()
+      Dataset.find({
+        uploadedBy: userId,
+      })
         .select(
           "name status totalRecords duplicateRecords createdAt"
         )

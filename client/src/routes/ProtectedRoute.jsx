@@ -1,12 +1,9 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 
-export default function ProtectedRoute({
-  children,
-}) {
-  const { loading, isAuthenticated } =
-    useAuth();
+export default function ProtectedRoute() {
+  const { loading, isAuthenticated } = useAuth();
 
   if (loading) {
     return (
@@ -25,5 +22,5 @@ export default function ProtectedRoute({
     );
   }
 
-  return children;
+  return <Outlet />;
 }
